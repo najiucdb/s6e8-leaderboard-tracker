@@ -1,0 +1,39 @@
+name: Hourly Leaderboard Tracker
+
+on:
+  schedule:
+    - cron: '0 * * * *' # This means run at minute 0 of every hour
+  workflow_dispatch: # This allows you to click a button to test it manually
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Allows GitHub to save the new CSV back to the repository
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          pip install pandas kaggle
+
+      - name: Run Tracker Script
+        env:
+          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+          KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
+        run: python track_lb.py
+
+      - name: Commit and Push changes
+        run: |
+          git config --global user.name "GitHub Action Bot"
+          git config --global user.email "action@github.com"
+          git add lb_history.csv
+          git commit -m "Hourly Leaderboard Update" || exit 0
+          git push
