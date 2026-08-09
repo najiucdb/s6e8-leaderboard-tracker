@@ -28,8 +28,7 @@ jobs:
 
       - name: Run Tracker Script
         env:
-          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
-          KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
+          KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
         run: python track_lb.py
 
       - name: Commit and Push changes
