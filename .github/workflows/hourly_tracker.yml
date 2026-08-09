@@ -2,21 +2,23 @@ name: Hourly Leaderboard Tracker
 
 on:
   schedule:
-    - cron: '0 * * * *' # This means run at minute 0 of every hour
-  workflow_dispatch: # This allows you to click a button to test it manually
+    - cron: '0 * * * *' # Runs at minute 0 of every hour
+  workflow_dispatch: # Allows manual trigger
 
 jobs:
   update-data:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # Allows GitHub to save the new CSV back to the repository
+      contents: write 
 
     steps:
+      # CHANGED TO v4
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4 
 
+      # CHANGED TO v5
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5 
         with:
           python-version: '3.10'
 
