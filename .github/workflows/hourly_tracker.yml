@@ -32,10 +32,27 @@ jobs:
           KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
         run: python track_lb.py
 
-      - name: Commit and Push changes
+      - name: Commit CSV to GitHub (Private Backup)
         run: |
           git config --global user.name "GitHub Action Bot"
           git config --global user.email "action@github.com"
           git add lb_history.csv
           git commit -m "Hourly Leaderboard Update" || exit 0
           git push
+
+      - name: Push Data to Kaggle Dataset
+        env:
+          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+          KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
+        run: |
+          # 1. Create a temporary folder just for the upload
+          mkdir -p kaggle_upload
+          
+          # 2. Copy ONLY the CSV file into it
+          cp lb_history.csv kaggle_upload/
+          
+          # 3. Create the Kaggle instruction file
+          echo '{"id": "najiama/s6e8-leaderboard-history-and-activity", "licenses": [{"name": "CC0-1.0"}]}' > kaggle_upload/dataset-metadata.json
+          
+          # 4. Upload to Kaggle!
+          kaggle datasets version -p kaggle_upload -m "Automated Hourly Update" --dir-mode skip
